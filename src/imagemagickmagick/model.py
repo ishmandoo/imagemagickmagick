@@ -64,21 +64,38 @@ def generate_command(
     except Exception as e:
         raise ModelDownloadError(f"Failed to load model: {e}") from e
 
+    attempts = previous_attempts or []
+
     messages: list[dict] = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": build_user_prompt(description)},
     ]
-    for template, error in (previous_attempts or []):
+    for template, error in attempts:
         messages.append({"role": "assistant", "content": template})
-        messages.append({"role": "user", "content": f"That command failed: {error}\nTry a different approach."})
+        messages.append({"role": "user", "content": _retry_feedback(error)})
+
+    # Raise temperature on each retry so the model escapes repetition loops
+    # instead of regenerating a near-identical (and identically broken) command.
+    temperature = 0.1 + 0.3 * len(attempts)
 
     response = llm.create_chat_completion(
         messages=messages,
         max_tokens=256,
-        temperature=0.1,
+        temperature=temperature,
         stop=["\n\n"],
     )
     return response["choices"][0]["message"]["content"]
+
+
+def _retry_feedback(error: str) -> str:
+    return (
+        f"That command did not work:\n{error}\n\n"
+        "Output a corrected command. Remember:\n"
+        "- Start with: convert INPUT_FILE\n"
+        "- End with: OUTPUT_FILE\n"
+        "- Use a different approach than before, not a repeated option.\n"
+        "- Output only the command, nothing else."
+    )
 
 
 def _get_click_echo():
