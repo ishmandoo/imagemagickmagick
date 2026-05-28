@@ -14,6 +14,7 @@ imagemagickmagick input.jpg "rotate 90 degrees clockwise" output.jpg --dry-run
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - ImageMagick (`apt install imagemagick` or `brew install imagemagick`)
+- **Windows only:** If installation fails with a CMake/compiler error, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the "Desktop development with C++" workload
 
 ## Installation
 
