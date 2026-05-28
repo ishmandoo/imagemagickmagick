@@ -3,7 +3,7 @@ import sys
 import click
 
 from imagemagickmagick.exceptions import CommandExecutionError, ImageMagickMagickError
-from imagemagickmagick.executor import check_imagemagick, run_command
+from imagemagickmagick.executor import find_imagemagick, resolve_command, run_command
 from imagemagickmagick.model import DEFAULT_FILE, DEFAULT_REPO, ensure_model, generate_command
 from imagemagickmagick.parser import extract_command
 from imagemagickmagick.prompt import substitute_placeholders
@@ -32,7 +32,7 @@ def main(
       imagemagickmagick input.jpg "rotate 90 degrees" output.jpg --dry-run
     """
     try:
-        check_imagemagick()
+        binary = find_imagemagick()
 
         model_path = ensure_model(model_repo, model_file)
 
@@ -40,7 +40,7 @@ def main(
         raw = generate_command(model_path, description)
 
         template = extract_command(raw)
-        command = substitute_placeholders(template, input_file, output_file)
+        command = resolve_command(substitute_placeholders(template, input_file, output_file), binary)
 
         if dry_run:
             click.echo(command)

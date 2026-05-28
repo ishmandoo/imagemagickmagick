@@ -5,22 +5,28 @@ import subprocess
 from imagemagickmagick.exceptions import CommandExecutionError, ImageMagickNotFoundError
 
 
-def check_imagemagick() -> None:
-    if shutil.which("convert") is None:
-        raise ImageMagickNotFoundError(
-            "ImageMagick 'convert' not found in PATH.\n"
-            "Install it with:\n"
-            "  apt install imagemagick    (Debian/Ubuntu)\n"
-            "  brew install imagemagick   (macOS)"
-        )
-    result = subprocess.run(
-        ["convert", "--version"], capture_output=True, text=True
+def find_imagemagick() -> str:
+    """Return the ImageMagick binary to use: 'magick' (IM7/Windows) or 'convert' (IM6/Linux)."""
+    for binary in ("magick", "convert"):
+        if shutil.which(binary) is None:
+            continue
+        result = subprocess.run([binary, "--version"], capture_output=True, text=True)
+        if "ImageMagick" in result.stdout:
+            return binary
+    raise ImageMagickNotFoundError(
+        "ImageMagick not found in PATH.\n"
+        "Install it with:\n"
+        "  apt install imagemagick    (Debian/Ubuntu)\n"
+        "  brew install imagemagick   (macOS)\n"
+        "  winget install ImageMagick (Windows)"
     )
-    if "ImageMagick" not in result.stdout:
-        raise ImageMagickNotFoundError(
-            "'convert' is in PATH but is not ImageMagick.\n"
-            f"Got: {result.stdout[:120]}"
-        )
+
+
+def resolve_command(command: str, binary: str) -> str:
+    """Prefix the LLM-generated 'convert ...' command with the correct binary."""
+    if binary == "magick":
+        return "magick " + command
+    return command
 
 
 def run_command(command: str) -> None:
