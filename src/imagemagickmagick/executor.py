@@ -18,7 +18,7 @@ def find_imagemagick() -> str:
         "Install it with:\n"
         "  apt install imagemagick    (Debian/Ubuntu)\n"
         "  brew install imagemagick   (macOS)\n"
-        "  winget install ImageMagick (Windows)"
+        "  winget install ImageMagick.ImageMagick (Windows)"
     )
 
 
