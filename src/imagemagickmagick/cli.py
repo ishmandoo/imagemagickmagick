@@ -2,7 +2,7 @@ import sys
 
 import click
 
-from imagemagickmagick.exceptions import CommandExecutionError, ImageMagickMagickError
+from imagemagickmagick.exceptions import CommandExecutionError, CommandParseError, ImageMagickMagickError
 from imagemagickmagick.executor import find_imagemagick, resolve_command, run_command
 from imagemagickmagick.model import DEFAULT_FILE, DEFAULT_REPO, ensure_model, generate_command
 from imagemagickmagick.parser import extract_command
@@ -44,7 +44,15 @@ def main(
                 click.echo(f"Retrying... (attempt {attempt + 1}/{MAX_RETRIES + 1})")
 
             raw = generate_command(model_path, description, previous_attempts or None)
-            template = extract_command(raw)
+
+            try:
+                template = extract_command(raw)
+            except CommandParseError as e:
+                previous_attempts.append((raw.strip(), str(e)))
+                if attempt == MAX_RETRIES:
+                    raise
+                continue
+
             command = resolve_command(substitute_placeholders(template, input_file, output_file), binary)
 
             if dry_run:
