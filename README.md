@@ -49,6 +49,6 @@ imagemagickmagick INPUT_FILE DESCRIPTION OUTPUT_FILE [--dry-run]
 
 ## How it works
 
-1. Your description is sent to a local 1B-parameter LLM ([Llama-3.2-1B-Instruct](https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF)) running via [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
+1. Your description is sent to a local 1.5B-parameter LLM ([Qwen2.5-Coder-1.5B-Instruct](https://huggingface.co/bartowski/Qwen2.5-Coder-1.5B-Instruct-GGUF)) running via [llama-cpp-python](https://github.com/abetlen/llama-cpp-python)
 2. The model generates an ImageMagick `convert` command
 3. The command is executed locally — no data leaves your machine

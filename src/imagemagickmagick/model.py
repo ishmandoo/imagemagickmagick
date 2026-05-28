@@ -5,8 +5,8 @@ from imagemagickmagick.prompt import SYSTEM_PROMPT, build_user_prompt
 
 CACHE_DIR = Path.home() / ".cache" / "imagemagickmagick"
 
-DEFAULT_REPO = "bartowski/Llama-3.2-1B-Instruct-GGUF"
-DEFAULT_FILE = "Llama-3.2-1B-Instruct-Q4_K_M.gguf"
+DEFAULT_REPO = "bartowski/Qwen2.5-Coder-1.5B-Instruct-GGUF"
+DEFAULT_FILE = "Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf"
 
 
 def ensure_model(repo_id: str = DEFAULT_REPO, filename: str = DEFAULT_FILE) -> Path:
@@ -23,7 +23,7 @@ def ensure_model(repo_id: str = DEFAULT_REPO, filename: str = DEFAULT_FILE) -> P
         raise ModelDownloadError(f"huggingface_hub not installed: {e}") from e
 
     click_echo = _get_click_echo()
-    click_echo(f"Downloading model (first run only, ~770MB)...")
+    click_echo(f"Downloading model (first run only, ~900MB)...")
 
     try:
         hf_hub_download(
