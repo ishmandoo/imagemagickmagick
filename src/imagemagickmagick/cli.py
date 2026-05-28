@@ -51,10 +51,17 @@ def main(
         click.echo(f"Done. Output: {output_file}")
 
     except CommandExecutionError as e:
-        click.echo(f"Error: {e}", err=True)
+        _echo_error(f"Error: {e}")
         if e.stderr:
-            click.echo(e.stderr, err=True)
+            _echo_error(e.stderr)
         sys.exit(1)
     except ImageMagickMagickError as e:
-        click.echo(f"Error: {e}", err=True)
+        _echo_error(f"Error: {e}")
         sys.exit(1)
+
+
+def _echo_error(msg: str) -> None:
+    try:
+        click.echo(msg, err=True)
+    except OSError:
+        click.echo(msg)

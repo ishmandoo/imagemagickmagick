@@ -43,7 +43,16 @@ User: make it wide and short
 convert INPUT_FILE -resize 150%x50%! OUTPUT_FILE
 
 User: stretch it to be twice as wide
-convert INPUT_FILE -resize 200%x100%! OUTPUT_FILE"""
+convert INPUT_FILE -resize 200%x100%! OUTPUT_FILE
+
+User: make it more red
+convert INPUT_FILE -channel Red -evaluate Add 20% OUTPUT_FILE
+
+User: make it more blue
+convert INPUT_FILE -channel Blue -evaluate Add 20% OUTPUT_FILE
+
+User: boost the saturation
+convert INPUT_FILE -modulate 100,150,100 OUTPUT_FILE"""
 
 
 def build_user_prompt(description: str) -> str:
