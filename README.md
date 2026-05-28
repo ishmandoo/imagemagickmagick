@@ -14,14 +14,22 @@ imagemagickmagick input.jpg "rotate 90 degrees clockwise" output.jpg --dry-run
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - ImageMagick (`apt install imagemagick` or `brew install imagemagick`)
-- **Windows only:** If installation fails with a CMake/compiler error, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the "Desktop development with C++" workload
+- **Windows only:** If the install still fails with a CMake/compiler error, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the "Desktop development with C++" workload, then retry without `--extra-index-url`
 
 ## Installation
 
+**macOS / Linux:**
 ```bash
 git clone https://github.com/ishmandoo/imagemagickmagick
 cd imagemagickmagick
 uv tool install .
+```
+
+**Windows:**
+```bash
+git clone https://github.com/ishmandoo/imagemagickmagick
+cd imagemagickmagick
+uv tool install . --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 ```
 
 The first time you run a command, the tool downloads a ~770MB language model to `~/.cache/imagemagickmagick/`. Subsequent runs load it from the cache.
