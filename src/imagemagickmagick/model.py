@@ -58,7 +58,7 @@ def generate_command(
     try:
         llm = Llama(
             model_path=str(model_path),
-            n_ctx=1024,
+            n_ctx=2048,
             verbose=False,
         )
     except Exception as e:
