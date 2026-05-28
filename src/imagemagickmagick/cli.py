@@ -31,24 +31,35 @@ def main(
       imagemagickmagick input.jpg "make it grayscale" output.jpg
       imagemagickmagick input.jpg "rotate 90 degrees" output.jpg --dry-run
     """
+    MAX_RETRIES = 2
     try:
         binary = find_imagemagick()
-
         model_path = ensure_model(model_repo, model_file)
 
-        click.echo("Generating command...")
-        raw = generate_command(model_path, description)
+        previous_attempts: list[tuple[str, str]] = []
+        for attempt in range(MAX_RETRIES + 1):
+            if attempt == 0:
+                click.echo("Generating command...")
+            else:
+                click.echo(f"Retrying... (attempt {attempt + 1}/{MAX_RETRIES + 1})")
 
-        template = extract_command(raw)
-        command = resolve_command(substitute_placeholders(template, input_file, output_file), binary)
+            raw = generate_command(model_path, description, previous_attempts or None)
+            template = extract_command(raw)
+            command = resolve_command(substitute_placeholders(template, input_file, output_file), binary)
 
-        if dry_run:
-            click.echo(command)
-            return
+            if dry_run:
+                click.echo(command)
+                return
 
-        click.echo(f"Running: {command}")
-        run_command(command)
-        click.echo(f"Done. Output: {output_file}")
+            click.echo(f"Running: {command}")
+            try:
+                run_command(command)
+                click.echo(f"Done. Output: {output_file}")
+                return
+            except CommandExecutionError as e:
+                previous_attempts.append((template, e.stderr or str(e)))
+                if attempt == MAX_RETRIES:
+                    raise
 
     except CommandExecutionError as e:
         _echo_error(f"Error: {e}")

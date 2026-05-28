@@ -48,6 +48,7 @@ def ensure_model(repo_id: str = DEFAULT_REPO, filename: str = DEFAULT_FILE) -> P
 def generate_command(
     model_path: Path,
     description: str,
+    previous_attempts: list[tuple[str, str]] | None = None,
 ) -> str:
     try:
         from llama_cpp import Llama
@@ -57,17 +58,22 @@ def generate_command(
     try:
         llm = Llama(
             model_path=str(model_path),
-            n_ctx=512,
+            n_ctx=1024,
             verbose=False,
         )
     except Exception as e:
         raise ModelDownloadError(f"Failed to load model: {e}") from e
 
+    messages: list[dict] = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_user_prompt(description)},
+    ]
+    for template, error in (previous_attempts or []):
+        messages.append({"role": "assistant", "content": template})
+        messages.append({"role": "user", "content": f"That command failed: {error}\nTry a different approach."})
+
     response = llm.create_chat_completion(
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": build_user_prompt(description)},
-        ],
+        messages=messages,
         max_tokens=256,
         temperature=0.1,
         stop=["\n\n"],
