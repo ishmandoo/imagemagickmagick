@@ -39,17 +39,11 @@ convert INPUT_FILE -colorspace Gray -normalize OUTPUT_FILE
 User: make it tall and skinny
 convert INPUT_FILE -resize 50%x150%! OUTPUT_FILE
 
-User: make it wide and short
-convert INPUT_FILE -resize 150%x50%! OUTPUT_FILE
-
 User: stretch it to be twice as wide
 convert INPUT_FILE -resize 200%x100%! OUTPUT_FILE
 
 User: make it more red
 convert INPUT_FILE -channel Red -evaluate Add 20% OUTPUT_FILE
-
-User: make it more blue
-convert INPUT_FILE -channel Blue -evaluate Add 20% OUTPUT_FILE
 
 User: boost the saturation
 convert INPUT_FILE -modulate 100,150,100 OUTPUT_FILE
@@ -77,9 +71,6 @@ convert INPUT_FILE -sharpen 0x1 OUTPUT_FILE
 
 User: add a white border
 convert INPUT_FILE -bordercolor white -border 20 OUTPUT_FILE
-
-User: add a black border
-convert INPUT_FILE -bordercolor black -border 20 OUTPUT_FILE
 
 User: trim the whitespace
 convert INPUT_FILE -trim +repage OUTPUT_FILE
@@ -110,9 +101,6 @@ convert INPUT_FILE -attenuate 0.4 +noise Gaussian OUTPUT_FILE
 
 User: make it warmer
 convert INPUT_FILE -channel Red -evaluate Add 10% -channel Blue -evaluate Subtract 10% OUTPUT_FILE
-
-User: make it cooler
-convert INPUT_FILE -channel Blue -evaluate Add 10% -channel Red -evaluate Subtract 10% OUTPUT_FILE
 
 User: desaturate it
 convert INPUT_FILE -modulate 100,0,100 OUTPUT_FILE

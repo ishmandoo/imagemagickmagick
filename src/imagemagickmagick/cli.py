@@ -33,15 +33,15 @@ def main(
     """
     MAX_RETRIES = 2
     try:
-        binary = find_imagemagick()
+        binary = find_imagemagick() if not dry_run else "convert"
         model_path = ensure_model(model_repo, model_file)
 
         previous_attempts: list[tuple[str, str]] = []
         for attempt in range(MAX_RETRIES + 1):
             if attempt == 0:
-                click.echo("Generating command...")
+                _echo("Generating command...")
             else:
-                click.echo(f"Retrying... (attempt {attempt + 1}/{MAX_RETRIES + 1})")
+                _echo(f"Retrying... (attempt {attempt + 1}/{MAX_RETRIES + 1})")
 
             raw = generate_command(model_path, description, previous_attempts or None)
 
@@ -56,13 +56,13 @@ def main(
             command = resolve_command(substitute_placeholders(template, input_file, output_file), binary)
 
             if dry_run:
-                click.echo(command)
+                _echo(command)
                 return
 
-            click.echo(f"Running: {command}")
+            _echo(f"Running: {command}")
             try:
                 run_command(command)
-                click.echo(f"Done. Output: {output_file}")
+                _echo(f"Done. Output: {output_file}")
                 return
             except CommandExecutionError as e:
                 previous_attempts.append((template, e.stderr or str(e)))
@@ -79,8 +79,16 @@ def main(
         sys.exit(1)
 
 
+def _echo(msg: str) -> None:
+    """click.echo, falling back to print() if the Windows console handle is broken."""
+    try:
+        click.echo(msg)
+    except OSError:
+        print(msg)
+
+
 def _echo_error(msg: str) -> None:
     try:
         click.echo(msg, err=True)
     except OSError:
-        click.echo(msg)
+        print(msg, file=sys.stderr)

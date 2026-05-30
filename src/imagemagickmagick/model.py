@@ -82,7 +82,7 @@ def generate_command(
         messages=messages,
         max_tokens=256,
         temperature=temperature,
-        stop=["\n\n"],
+        stop=["\n", "\n\n"],
     )
     return response["choices"][0]["message"]["content"]
 
